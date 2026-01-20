@@ -76,10 +76,10 @@ PerlinNoise/
 
 ### Phase 2: Core Models & Tile Types
 **Goal:** Define tile system and data models
-- [ ] Create `Tile` model class with tile type and color properties
-- [ ] Create enum for `TileType` (Grass, Water, Mountain, Beach)
-- [ ] Create `TileColor` constants with hex color values
-- [ ] Create `MapDimensions` or `MapSize` model (width, height)
+- [x] Create `Tile` model class with tile type and color properties
+- [x] Create enum for `TileType` (Grass, Water, Mountain, Beach)
+- [x] Create `TileColor` constants with hex color values
+- [x] Create `MapDimensions` or `MapSize` model (width, height)
 
 ### Phase 3: Abstractions & Dependency Injection
 **Goal:** Set up interfaces and DI container
