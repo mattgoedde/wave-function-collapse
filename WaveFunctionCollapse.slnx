@@ -1,2 +1,9 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WaveFunctionCollapse.Console/WaveFunctionCollapse.Console.csproj" />
+    <Project Path="src/WaveFunctionCollapse.Core/WaveFunctionCollapse.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WaveFunctionCollapse.Tests/WaveFunctionCollapse.Tests.csproj" />
+  </Folder>
 </Solution>

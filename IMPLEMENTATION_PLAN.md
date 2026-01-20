@@ -22,38 +22,31 @@ A .NET 10 prototype implementation of the Wave Function Collapse (WFC) algorithm
 ```
 WaveFunctionCollapse/
 ├── src/
-│   ├── WaveFunctionCollapse.Core/
-│   │   ├── Models/
-│   │   │   ├── Tile.cs
-│   │   │   ├── TileType.cs
-│   │   │   └── Grid.cs
-│   │   ├── Algorithm/
-│   │   │   ├── WaveFunction.cs
-│   │   │   ├── Propagator.cs
-│   │   │   └── Constraint.cs
-│   │   └── WaveFunctionCollapse.Core.csproj
-│   ├── WaveFunctionCollapse.Console/
-│   │   ├── Program.cs
-│   │   ├── Rendering/
-│   │   │   └── MapRenderer.cs
-│   │   └── WaveFunctionCollapse.Console.csproj
-│
+│   ├── WaveFunctionCollapse.Core/       (Algorithm logic and models)
+│   └── WaveFunctionCollapse.Console/    (CLI visualization)
 ├── tests/
-│   └── WaveFunctionCollapse.Tests/
-│       ├── AlgorithmTests.cs
-│       ├── GridTests.cs
-│       └── WaveFunctionCollapse.Tests.csproj
-│
-├── IMPLEMENTATION_PLAN.md
-└── WaveFunctionCollapse.slnx
+│   └── WaveFunctionCollapse.Tests/      (Unit tests)
+└── WaveFunctionCollapse.slnx            (Solution file)
 ```
 
 **Key Components:**
 - **Core**: WFC algorithm logic, tile models, constraint propagation
-- **Console**: Spectre.Console application for visualization
+- **Console**: Spectre.Console CLI application for visualization
 - **Tests**: Unit tests for algorithm correctness
 
 ## Implementation Phases
+
+### Phase 0: Initial Project Setup
+- [x] Create WaveFunctionCollapse.Core class library (.NET 10)
+- [x] Create WaveFunctionCollapse.Console console application (.NET 10)
+- [x] Create WaveFunctionCollapse.Tests unit test project (xUnit)
+- [x] Set up WaveFunctionCollapse.slnx with all three projects
+- [x] Add Spectre.Console NuGet package to Console project
+- [x] Add xUnit NuGet packages to Tests project
+- [x] Configure Console project to reference Core library
+- [x] Configure Tests project to reference Core library
+- [x] Verify solution builds without errors
+- [x] Create basic project folder structure (src/, tests/, Models/, Algorithm/, Rendering/)
 
 ### Phase 1: Core Data Models & Basic Setup
 - [ ] Create TileType enum (Grass, Water, Mountain, Beach)
