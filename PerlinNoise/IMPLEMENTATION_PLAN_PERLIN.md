@@ -97,9 +97,9 @@ PerlinNoise/
 
 ### Phase 5: Noise-to-Tile Mapping
 **Goal:** Convert 2D noise field to tile types
-- [ ] Create `INoiseToTileMapper` interface with method: `TileType MapNoiseToTile(float noiseValue)`
-- [ ] Create `NoiseToTileMapper : INoiseToTileMapper` class
-- [ ] Implement quartile mapping logic (0-0.25→Water, 0.25-0.50→Beach, etc.)
+- [x] Create `INoiseToTileMapper` interface with method: `TileType MapNoiseToTile(float noiseValue)`
+- [x] Create `NoiseToTileMapper : INoiseToTileMapper` class
+- [x] Implement quartile mapping logic (0-0.25→Water, 0.25-0.50→Beach, etc.)
 
 ### Phase 6: Map Generator Implementation
 **Goal:** Orchestrate map generation using noise field and tile mapping
