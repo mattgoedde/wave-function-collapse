@@ -94,6 +94,7 @@ PerlinNoise/
 - [x] Method returns `float[,]` with dimensions matching (width, height)
 - [x] All values in 0-1 range
 - [x] Ensure seeding produces deterministic output
+- [x] Added fBm (Fractional Brownian Motion) with scale=0.05, octaves=4, persistence=0.5
 
 ### Phase 5: Noise-to-Tile Mapping
 **Goal:** Convert 2D noise field to tile types
@@ -103,18 +104,18 @@ PerlinNoise/
 
 ### Phase 6: Map Generator Implementation
 **Goal:** Orchestrate map generation using noise field and tile mapping
-- [ ] Implement `MapGenerator : IMapGenerator`
-- [ ] Accept seed, dimensions, INoiseGenerator, and INoiseToTileMapper as dependencies
-- [ ] Call INoiseGenerator to get 2D noise field (float[,])
-- [ ] Iterate through noise field and use INoiseToTileMapper to convert each float to TileType
-- [ ] Return 2D Tile array (Tile[,])
+- [x] Implement `MapGenerator : IMapGenerator`
+- [x] Accept seed, dimensions, INoiseGenerator, and INoiseToTileMapper as dependencies
+- [x] Call INoiseGenerator to get 2D noise field (float[,])
+- [x] Iterate through noise field and use INoiseToTileMapper to convert each float to TileType
+- [x] Return 2D Tile array (Tile[,])
 
 ### Phase 7: Console Visualization
 **Goal:** Display generated maps in console
-- [ ] Integrate Spectre.Console NuGet package
-- [ ] Create `MapRenderer` class to format tile map for console
-- [ ] Implement colored pixel/character rendering using tile colors
-- [ ] Create console application entry point to generate and display a map
+- [x] Integrate Spectre.Console NuGet package
+- [x] Create `MapRenderer` class to format tile map for console
+- [x] Implement colored pixel/character rendering using tile colors
+- [x] Create console application entry point to generate and display a map
 
 ### Phase 8: Deterministic Output Testing
 **Goal:** Verify map reproducibility
@@ -129,3 +130,7 @@ PerlinNoise/
 - **2D Noise Field**: INoiseGenerator returns a complete `float[,]` noise field rather than sampling individual coordinates. This is cleaner and more efficient.
 - **Multidimensional Arrays**: Using `float[,]` and `Tile[,]` for 2D data (more intuitive for grid representation than jagged arrays).
 - **Mapper Interface**: INoiseToTileMapper is injected into MapGenerator for flexibility and testability.
+- **fBm Enhancement**: Both noise generators now use Fractional Brownian Motion with hardcoded parameters:
+  - Scale: 0.05 (controls frequency/detail)
+  - Octaves: 4 (number of noise layers)
+  - Persistence: 0.5 (amplitude falloff per octave)

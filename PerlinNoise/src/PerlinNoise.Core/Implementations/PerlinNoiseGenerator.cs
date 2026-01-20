@@ -7,6 +7,11 @@ public class PerlinNoiseGenerator : INoiseGenerator
     private const int PermutationTableSize = 256;
     private int[]? _permutation;
 
+    // fBm (Fractional Brownian Motion) parameters
+    private const float Scale = 0.02f;
+    private const int Octaves = 4;
+    private const float Persistence = 0.01f;
+
     public float[,] GenerateNoise(int width, int height, int seed)
     {
         InitializePermutationTable(seed);
@@ -16,11 +21,30 @@ public class PerlinNoiseGenerator : INoiseGenerator
         {
             for (int y = 0; y < height; y++)
             {
-                noise[x, y] = Sample(x * 0.1f, y * 0.1f);
+                noise[x, y] = SampleFBm(x, y);
             }
         }
 
         return noise;
+    }
+
+    private float SampleFBm(float x, float y)
+    {
+        float value = 0f;
+        float amplitude = 1f;
+        float frequency = 1f;
+        float maxValue = 0f;
+
+        for (int i = 0; i < Octaves; i++)
+        {
+            value += Sample(x * frequency * Scale, y * frequency * Scale) * amplitude;
+            maxValue += amplitude;
+
+            amplitude *= Persistence;
+            frequency *= 2f;
+        }
+
+        return value / maxValue;
     }
 
     private void InitializePermutationTable(int seed)
