@@ -70,18 +70,41 @@ WaveFunctionCollapse/
 - [x] Test edge cases (contradictions, grid boundaries)
 - [x] Verify output generation rate
 
-### Phase 4: Rule Sets & Refinement (Future)
+### Phase 4: Type-Specific Adjacency Rules (Hardcoded)
+- [ ] Implement tile adjacency lookup table (hardcoded rules)
+- [ ] Update constraint propagation to enforce type-specific rules
+- [ ] Create AdjacencyRules class to manage valid tile combinations
+- [ ] Test adjacency enforcement for all tile types
+- [ ] Verify Mountains are only adjacent to Grass and other Mountains
+- [ ] Verify Water and Beach form coastal boundaries
+- [ ] Write unit tests for each tile type's allowed adjacencies
+- [ ] Write integration tests for map generation with new rules
+- [ ] Verify no contradictions arise from the new rule set
+- [ ] Test edge cases (islands, peninsulas, inland lakes)
+
+### Phase 5: Configurable Rule Sets (Future)
 - [ ] Develop configuration format for adjacency rules
-- [ ] Implement tile compatibility matrix
+- [ ] Implement tile compatibility matrix from config file
 - [ ] Add support for learned patterns from sample images
-- [ ] Optimize performance for larger maps
+
+### Phase 6: Performance Optimization with LINQ
+- [ ] Profile current generation performance (identify bottlenecks)
+- [ ] Replace manual loops with LINQ queries for tile filtering
+- [ ] Optimize entropy calculation using LINQ (Min/Where/Select chains)
+- [ ] Use LINQ to optimize constraint propagation (querying affected neighbors)
+- [ ] Implement LINQ-based adjacency checking (parallel Where/All/Any)
+- [ ] Optimize wave state queries using LINQ (collapsed/uncollapsed tile queries)
+- [ ] Consider PLINQ for parallel processing of independent tiles
+- [ ] Benchmark generation time before and after optimizations
+- [ ] Target: Generate 64x64 maps in <500ms consistently
+- [ ] Write performance regression tests
 
 ## Success Criteria
 
 - [ ] Algorithm correctly generates patterns following input statistics  
 - [ ] Generates valid outputs 95%+ of attempts (low contradiction rate)  
 - [ ] Supports variable output sizes  
-- [ ] CLI tool is easy to use  
+- [x] CLI tool is easy to use  
 - [ ] Performance acceptable for interactive use (<5s for 512x512)  
 - [ ] Code is well-tested and documented  
 
@@ -94,10 +117,33 @@ WaveFunctionCollapse/
 - [ ] Code compiles without warnings in .NET 10
 - [ ] **Deterministic generation: same seed produces identical maps every time**
 
+## Tile Adjacency Rules (Phase 4 & Beyond)
+
+### Hardcoded Adjacency Rules (Phase 4)
+Each tile type has specific constraints on which other tile types can be adjacent (in any direction):
+
+- **Grass**: Can be adjacent to [Grass, Beach, Mountain]
+- **Mountain**: Can be adjacent to [Grass, Mountain] (no Beach or Water)
+- **Beach**: Can be adjacent to [Beach, Grass, Water]
+- **Water**: Can be adjacent to [Water, Beach]
+
+**Design Rationale:**
+- Mountains form interior landmasses and cannot border water or beaches directly
+- Beaches provide natural transitions between land (Grass, Mountain) and water
+- Water and Grass can only meet through Beach tiles
+- This creates realistic coastal/terrain geography in generated maps
+
+### Future: Configurable Rules (Phase 5)
+Will transition to configuration-based rules (JSON/YAML) to support:
+- Custom tile types
+- Learned patterns from sample images
+- Multiple rule sets for different biomes
+
 ## Notes & Observations
 
 - **Naive Approach**: This prototype uses a simple WFC without learning from input samples. All tiles start with equal probability, and adjacency is permissive initially.
 - **Deterministic Seeding**: All random number generation uses a seeded Random instance to ensure reproducible maps. The same seed will always produce the same map layout.
+- **Phase 4 Focus**: Implementing hardcoded type-specific adjacency rules to create more realistic map generation with logical terrain constraints.
 - **Future Enhancement**: As the prototype matures, we'll develop explicit rule sets (JSON/configuration-based) defining which tiles can be adjacent.
 - **Backtracking Strategy**: If a contradiction occurs during generation, the algorithm will backtrack to a previous valid state and try an alternative path.
 - **Unity Transfer**: The Core library is designed to be platform-agnostic for easy porting to Unity. The Console app demonstrates the concept but won't be part of the game.
