@@ -83,10 +83,10 @@ PerlinNoise/
 
 ### Phase 3: Abstractions & Dependency Injection
 **Goal:** Set up interfaces and DI container
-- [ ] Create `INoiseGenerator` interface with method: `float[,] GenerateNoise(int width, int height, int seed)`
-- [ ] Create `IMapGenerator` interface for map generation logic
-- [ ] Set up dependency injection container (Microsoft.Extensions.DependencyInjection)
-- [ ] Configure DI registrations for interfaces
+- [x] Create `INoiseGenerator` interface with method: `float[,] GenerateNoise(int width, int height, int seed)`
+- [x] Create `IMapGenerator` interface for map generation logic
+- [x] Set up dependency injection container (Microsoft.Extensions.DependencyInjection)
+- [x] Configure DI registrations for interfaces
 
 ### Phase 4: Noise Algorithm Implementation
 **Goal:** Implement a simple deterministic noise generator returning 2D noise field
