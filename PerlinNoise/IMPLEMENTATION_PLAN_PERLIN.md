@@ -68,11 +68,11 @@ PerlinNoise/
 
 ### Phase 1: Project Setup
 **Goal:** Create solution structure and project references
-- [ ] Create `PerlinNoise.Core` class library project
-- [ ] Create `PerlinNoise.Console` console app project
-- [ ] Create `PerlinNoise.Tests` unit test project
-- [ ] Add project references (Console → Core, Tests → Core)
-- [ ] Verify all projects compile successfully
+- [x] Create `PerlinNoise.Core` class library project
+- [x] Create `PerlinNoise.Console` console app project
+- [x] Create `PerlinNoise.Tests` unit test project
+- [x] Add project references (Console → Core, Tests → Core)
+- [x] Verify all projects compile successfully
 
 ### Phase 2: Core Models & Tile Types
 **Goal:** Define tile system and data models
