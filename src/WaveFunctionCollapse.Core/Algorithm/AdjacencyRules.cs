@@ -3,12 +3,15 @@ namespace WaveFunctionCollapse.Core.Algorithm;
 using WaveFunctionCollapse.Core.Models;
 
 /// <summary>
-/// Hardcoded tile adjacency rules for Phase 4 implementation.
+/// Hardcoded tile adjacency rules for Phase 4+ implementation.
 /// Enforces realistic terrain constraints:
 /// - Grass: Can be adjacent to [Grass, Beach, Mountain]
 /// - Mountain: Can be adjacent to [Grass, Mountain] (no Beach or Water)
-/// - Beach: Can be adjacent to [Beach, Grass, Water]
+/// - Beach: Can be adjacent to [Beach, Grass, Water] (Water only if it neighbors Grass)
 /// - Water: Can be adjacent to [Water, Beach]
+/// 
+/// Special Rules (Phase 5 enhancement):
+/// - Beach→Water adjacency requires that Water already has a Grass neighbor to prevent isolated beach islands.
 /// </summary>
 public class HardcodedRuleProvider : ITileRuleProvider
 {
@@ -103,6 +106,27 @@ public class HardcodedRuleProvider : ITileRuleProvider
             ? weight 
             : 1.0;
     }
+
+    /// <summary>
+    /// Context-aware adjacency check for Beach→Water constraint.
+    /// Beach can only neighbor Water if the Water tile already neighbors Grass.
+    /// This prevents isolated beach islands in the middle of water.
+    /// </summary>
+    public bool CanBeAdjacentWithContext(TileType tile1, TileType tile2, IEnumerable<TileType> neighborAdjacentTypes)
+    {
+        // Standard adjacency check first
+        if (!CanBeAdjacent(tile1, tile2))
+            return false;
+
+        // Special rule: Beach (tile1) → Water (tile2) only if Water neighbors Grass
+        if (tile1 == TileType.Beach && tile2 == TileType.Water)
+        {
+            return neighborAdjacentTypes.Contains(TileType.Grass);
+        }
+
+        // All other adjacencies follow standard rules
+        return true;
+    }
 }
 
 /// <summary>
@@ -123,5 +147,10 @@ public class PermissiveRuleProvider : ITileRuleProvider
     public double GetAdjacencyWeight(TileType tileType, TileType neighborType)
     {
         return 1.0; // No preferences in permissive mode
+    }
+
+    public bool CanBeAdjacentWithContext(TileType tile1, TileType tile2, IEnumerable<TileType> neighborAdjacentTypes)
+    {
+        return true; // Permissive mode allows anything
     }
 }

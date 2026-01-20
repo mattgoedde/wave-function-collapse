@@ -1,6 +1,6 @@
-namespace WaveFunctionCollapse.Core.Algorithm;
-
 using WaveFunctionCollapse.Core.Models;
+
+namespace WaveFunctionCollapse.Core.Algorithm;
 
 /// <summary>
 /// Defines the contract for tile adjacency rules.
@@ -26,4 +26,14 @@ public interface ITileRuleProvider
     /// This enables clustering behavior (e.g., mountains prefer mountains).
     /// </summary>
     double GetAdjacencyWeight(TileType tileType, TileType neighborType);
+
+    /// <summary>
+    /// Determines if two tile types can be adjacent with consideration of the neighbor's existing adjacencies.
+    /// This enables context-aware rules like "Beach can only neighbor Water if Water already neighbors Grass".
+    /// </summary>
+    /// <param name="tile1">The first tile type</param>
+    /// <param name="tile2">The second tile type (potential neighbor)</param>
+    /// <param name="neighborAdjacentTypes">The tile types already adjacent to tile2</param>
+    /// <returns>True if the tiles can be adjacent given the context</returns>
+    bool CanBeAdjacentWithContext(TileType tile1, TileType tile2, IEnumerable<TileType> neighborAdjacentTypes);
 }
