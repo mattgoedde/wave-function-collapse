@@ -90,10 +90,10 @@ PerlinNoise/
 
 ### Phase 4: Noise Algorithm Implementation
 **Goal:** Implement a simple deterministic noise generator returning 2D noise field
-- [ ] Implement `SimpleNoiseGenerator : INoiseGenerator` (or Perlin if preferred)
-- [ ] Method returns `float[,]` with dimensions matching (width, height)
-- [ ] All values in 0-1 range
-- [ ] Ensure seeding produces deterministic output
+- [x] Implement `PerlinNoiseGenerator : INoiseGenerator` (Perlin noise)
+- [x] Method returns `float[,]` with dimensions matching (width, height)
+- [x] All values in 0-1 range
+- [x] Ensure seeding produces deterministic output
 
 ### Phase 5: Noise-to-Tile Mapping
 **Goal:** Convert 2D noise field to tile types

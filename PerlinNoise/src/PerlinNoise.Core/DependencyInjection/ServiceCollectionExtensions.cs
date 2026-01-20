@@ -1,6 +1,7 @@
 namespace PerlinNoise.Core.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
+using PerlinNoise.Core.Abstractions;
 
 public static class ServiceCollectionExtensions
 {
