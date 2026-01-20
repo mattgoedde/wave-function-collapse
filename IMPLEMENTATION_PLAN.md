@@ -49,26 +49,26 @@ WaveFunctionCollapse/
 - [x] Create basic project folder structure (src/, tests/, Models/, Algorithm/, Rendering/)
 
 ### Phase 1: Core Data Models & Basic Setup
-- [ ] Create TileType enum (Grass, Water, Mountain, Beach)
-- [ ] Create Tile class to represent grid cells
-- [ ] Create Grid class to manage 64x64 tile state
-- [ ] Set up project structure with Core and Console assemblies
-- [ ] Add Spectre.Console NuGet dependency
+- [x] Create TileType enum (Grass, Water, Mountain, Beach)
+- [x] Create Tile class to represent grid cells
+- [x] Create Grid class to manage 64x64 tile state
+- [x] Set up project structure with Core and Console assemblies
+- [x] Add Spectre.Console NuGet dependency
 
 ### Phase 2: Naive WFC Algorithm Implementation
-- [ ] Implement Wave class to track superposition states
-- [ ] Implement tile observation (collapse) logic
-- [ ] Implement basic constraint propagation
-- [ ] Create simple adjacency rules (all tiles can be adjacent initially)
-- [ ] Add entropy calculation for tile selection
-- [ ] Handle backtracking for contradiction resolution
+- [x] Implement Wave class to track superposition states
+- [x] Implement tile observation (collapse) logic
+- [x] Implement basic constraint propagation
+- [x] Create simple adjacency rules (all tiles can be adjacent initially)
+- [x] Add entropy calculation for tile selection
+- [x] Handle backtracking for contradiction resolution
 
 ### Phase 3: Visualization & Testing
-- [ ] Create MapRenderer using Spectre.Console
-- [ ] Generate and display a 64x64 map
-- [ ] Write unit tests for algorithm correctness
-- [ ] Test edge cases (contradictions, grid boundaries)
-- [ ] Verify output generation rate
+- [x] Create MapRenderer using Spectre.Console
+- [x] Generate and display a 64x64 map
+- [x] Write unit tests for algorithm correctness
+- [x] Test edge cases (contradictions, grid boundaries)
+- [x] Verify output generation rate
 
 ### Phase 4: Rule Sets & Refinement (Future)
 - [ ] Develop configuration format for adjacency rules
