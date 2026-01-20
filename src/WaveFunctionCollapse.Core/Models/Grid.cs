@@ -5,18 +5,20 @@ public class TileGrid
     private readonly Tile[,] _tiles;
     public int Width { get; }
     public int Height { get; }
+    public TileDistribution Distribution { get; }
 
-    public TileGrid(int width, int height)
+    public TileGrid(int width, int height, TileDistribution? distribution = null)
     {
         Width = width;
         Height = height;
+        Distribution = distribution ?? TileDistribution.CreateDefault();
         _tiles = new Tile[width, height];
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                _tiles[x, y] = new Tile(x, y);
+                _tiles[x, y] = new Tile(x, y, Distribution);
             }
         }
     }
@@ -59,7 +61,7 @@ public class TileGrid
     {
         foreach (var tile in GetAllTiles())
         {
-            tile.Reset();
+            tile.Reset(Distribution);
         }
     }
 }

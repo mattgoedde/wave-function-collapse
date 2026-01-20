@@ -2,28 +2,87 @@ namespace WaveFunctionCollapse.Core.Algorithm;
 
 using WaveFunctionCollapse.Core.Models;
 
-public class AdjacencyRules
+/// <summary>
+/// Hardcoded tile adjacency rules for Phase 4 implementation.
+/// Enforces realistic terrain constraints:
+/// - Grass: Can be adjacent to [Grass, Beach, Mountain]
+/// - Mountain: Can be adjacent to [Grass, Mountain] (no Beach or Water)
+/// - Beach: Can be adjacent to [Beach, Grass, Water]
+/// - Water: Can be adjacent to [Water, Beach]
+/// </summary>
+public class HardcodedRuleProvider : ITileRuleProvider
 {
     private readonly Dictionary<TileType, HashSet<TileType>> _adjacencyMap;
+    private readonly Dictionary<(TileType, TileType), double> _adjacencyWeights;
 
-    public AdjacencyRules()
+    public HardcodedRuleProvider()
     {
         _adjacencyMap = new Dictionary<TileType, HashSet<TileType>>();
-        InitializeDefaultRules();
+        _adjacencyWeights = new Dictionary<(TileType, TileType), double>();
+        InitializeRules();
+        InitializeWeights();
     }
 
-    private void InitializeDefaultRules()
+    private void InitializeRules()
     {
-        foreach (var tileType in Enum.GetValues(typeof(TileType)).Cast<TileType>())
+        _adjacencyMap[TileType.Grass] = new HashSet<TileType> 
+        { 
+            TileType.Grass, 
+            TileType.Beach, 
+            TileType.Mountain 
+        };
+
+        _adjacencyMap[TileType.Mountain] = new HashSet<TileType> 
+        { 
+            TileType.Grass, 
+            TileType.Mountain 
+        };
+
+        _adjacencyMap[TileType.Beach] = new HashSet<TileType> 
+        { 
+            TileType.Beach, 
+            TileType.Grass, 
+            TileType.Water 
+        };
+
+        _adjacencyMap[TileType.Water] = new HashSet<TileType> 
+        { 
+            TileType.Water, 
+            TileType.Beach 
+        };
+    }
+
+    private void InitializeWeights()
+    {
+        // Initialize all weights to neutral (1.0)
+        foreach (var tile1 in Enum.GetValues(typeof(TileType)).Cast<TileType>())
         {
-            _adjacencyMap[tileType] = new HashSet<TileType> 
-            { 
-                TileType.Grass, 
-                TileType.Water, 
-                TileType.Mountain, 
-                TileType.Beach 
-            };
+            foreach (var tile2 in Enum.GetValues(typeof(TileType)).Cast<TileType>())
+            {
+                _adjacencyWeights[(tile1, tile2)] = 1.0;
+            }
         }
+
+        // Same-type adjacencies are heavily preferred (clustering)
+        _adjacencyWeights[(TileType.Grass, TileType.Grass)] = 3.0;
+        _adjacencyWeights[(TileType.Water, TileType.Water)] = 3.0;
+        _adjacencyWeights[(TileType.Mountain, TileType.Mountain)] = 3.0;
+        _adjacencyWeights[(TileType.Beach, TileType.Beach)] = 2.0;
+
+        // Type-specific preferences for terrain formation
+        // Grass prefers adjacent to mountains (foothills) and beaches (transition)
+        _adjacencyWeights[(TileType.Grass, TileType.Mountain)] = 1.3;
+        _adjacencyWeights[(TileType.Grass, TileType.Beach)] = 1.2;
+
+        // Mountain prefers grass around it (natural elevation boundaries)
+        _adjacencyWeights[(TileType.Mountain, TileType.Grass)] = 1.2;
+
+        // Beach prefers water and grass equally (natural coastline)
+        _adjacencyWeights[(TileType.Beach, TileType.Water)] = 1.5;
+        _adjacencyWeights[(TileType.Beach, TileType.Grass)] = 1.3;
+
+        // Water prefers beach nearby (realistic coastlines)
+        _adjacencyWeights[(TileType.Water, TileType.Beach)] = 1.5;
     }
 
     public bool CanBeAdjacent(TileType tile1, TileType tile2)
@@ -36,5 +95,33 @@ public class AdjacencyRules
         return _adjacencyMap.TryGetValue(tileType, out var neighbors) 
             ? neighbors 
             : Enumerable.Empty<TileType>();
+    }
+
+    public double GetAdjacencyWeight(TileType tileType, TileType neighborType)
+    {
+        return _adjacencyWeights.TryGetValue((tileType, neighborType), out var weight) 
+            ? weight 
+            : 1.0;
+    }
+}
+
+/// <summary>
+/// Permissive rule provider for testing - allows all tiles to be adjacent.
+/// </summary>
+public class PermissiveRuleProvider : ITileRuleProvider
+{
+    public bool CanBeAdjacent(TileType tile1, TileType tile2)
+    {
+        return true;
+    }
+
+    public IEnumerable<TileType> GetValidNeighbors(TileType tileType)
+    {
+        return Enum.GetValues(typeof(TileType)).Cast<TileType>();
+    }
+
+    public double GetAdjacencyWeight(TileType tileType, TileType neighborType)
+    {
+        return 1.0; // No preferences in permissive mode
     }
 }

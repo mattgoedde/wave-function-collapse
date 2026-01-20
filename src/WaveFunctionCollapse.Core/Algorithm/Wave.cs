@@ -5,15 +5,15 @@ using WaveFunctionCollapse.Core.Models;
 public class Wave
 {
     private readonly TileGrid _grid;
-    private readonly AdjacencyRules _adjacencyRules;
+    private readonly ITileRuleProvider _ruleProvider;
     private readonly Random _random;
     private Stack<TileGrid> _backtrackStack;
     private bool _contradiction;
 
-    public Wave(TileGrid grid, int seed)
+    public Wave(TileGrid grid, int seed, ITileRuleProvider? ruleProvider = null)
     {
         _grid = grid;
-        _adjacencyRules = new AdjacencyRules();
+        _ruleProvider = ruleProvider ?? new HardcodedRuleProvider();
         _random = new Random(seed);
         _backtrackStack = new Stack<TileGrid>();
         _contradiction = false;
@@ -56,7 +56,7 @@ public class Wave
 
         SaveState();
 
-        var possibleType = SelectRandomType(tileToCollapse.PossibleTypes);
+        var possibleType = SelectRandomType(tileToCollapse.PossibleTypes, tileToCollapse.ProbabilityWeights, tileToCollapse);
         tileToCollapse.Collapse(possibleType);
 
         return true;
@@ -77,10 +77,40 @@ public class Wave
             : null;
     }
 
-    private TileType SelectRandomType(HashSet<TileType> possibleTypes)
+    private TileType SelectRandomType(HashSet<TileType> possibleTypes, Dictionary<TileType, double> probabilityWeights, Tile tileToCollapse)
     {
-        var typeList = possibleTypes.ToList();
-        return typeList[_random.Next(typeList.Count)];
+        // Get collapsed neighbors to calculate adjacency preferences
+        var collapsedNeighbors = GetNeighbors(tileToCollapse).Where(n => n.IsCollapsed).ToList();
+
+        // Filter to only possible types and calculate their relative weights
+        var validWeights = possibleTypes
+            .Where(t => probabilityWeights.ContainsKey(t))
+            .ToDictionary(t => t, t => {
+                // Start with frequency bias probability
+                double baseWeight = probabilityWeights[t];
+                
+                // Apply adjacency preference multiplier based on collapsed neighbors
+                double adjacencyMultiplier = tileToCollapse.CalculateNeighborAffinityWeight(t, collapsedNeighbors, _ruleProvider);
+                
+                // Combine: base probability weighted by adjacency preference
+                return baseWeight * adjacencyMultiplier;
+            });
+
+        if (validWeights.Count == 0)
+            return possibleTypes.First();
+
+        var totalWeight = validWeights.Values.Sum();
+        var randomValue = _random.NextDouble() * totalWeight;
+        var cumulativeWeight = 0.0;
+
+        foreach (var kvp in validWeights)
+        {
+            cumulativeWeight += kvp.Value;
+            if (randomValue <= cumulativeWeight)
+                return kvp.Key;
+        }
+
+        return validWeights.Keys.Last();
     }
 
     private bool PropagatConstraints()
@@ -151,7 +181,7 @@ public class Wave
         var validTypes = new HashSet<TileType>();
         foreach (var tileType in Enum.GetValues(typeof(TileType)).Cast<TileType>())
         {
-            if (_adjacencyRules.CanBeAdjacent(collapsedType, tileType))
+            if (_ruleProvider.CanBeAdjacent(collapsedType, tileType))
             {
                 validTypes.Add(tileType);
             }
@@ -161,10 +191,10 @@ public class Wave
 
     private void SaveState()
     {
-        var stateCopy = new TileGrid(_grid.Width, _grid.Height);
+        var stateCopy = new TileGrid(_grid.Width, _grid.Height, _grid.Distribution);
         foreach (var tile in _grid.GetAllTiles())
         {
-            var tileCopy = new Tile(tile.X, tile.Y);
+            var tileCopy = new Tile(tile.X, tile.Y, _grid.Distribution);
             if (tile.IsCollapsed)
             {
                 tileCopy.Collapse(tile.Type!.Value);

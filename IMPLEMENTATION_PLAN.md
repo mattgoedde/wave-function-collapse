@@ -71,16 +71,74 @@ WaveFunctionCollapse/
 - [x] Verify output generation rate
 
 ### Phase 4: Type-Specific Adjacency Rules (Hardcoded)
-- [ ] Implement tile adjacency lookup table (hardcoded rules)
-- [ ] Update constraint propagation to enforce type-specific rules
-- [ ] Create AdjacencyRules class to manage valid tile combinations
-- [ ] Test adjacency enforcement for all tile types
-- [ ] Verify Mountains are only adjacent to Grass and other Mountains
-- [ ] Verify Water and Beach form coastal boundaries
-- [ ] Write unit tests for each tile type's allowed adjacencies
-- [ ] Write integration tests for map generation with new rules
-- [ ] Verify no contradictions arise from the new rule set
-- [ ] Test edge cases (islands, peninsulas, inland lakes)
+- [x] Implement tile adjacency lookup table (hardcoded rules)
+- [x] Update constraint propagation to enforce type-specific rules
+- [x] Create ITileRuleProvider interface for future configuration support
+- [x] Implement HardcodedRuleProvider with phase 4 rules
+- [x] Test adjacency enforcement for all tile types
+- [x] Verify Mountains are only adjacent to Grass and other Mountains
+- [x] Verify Water and Beach form coastal boundaries
+- [x] Write unit tests for each tile type's allowed adjacencies
+- [x] Write integration tests for map generation with new rules
+- [x] Verify no contradictions arise from the new rule set
+- [x] Test edge cases (islands, peninsulas, inland lakes)
+
+### Phase 4.5: Natural Frequency Bias & Clustering (In Progress)
+
+**Problem Identified:** Phase 4 maps lack realism - terrain is too uniform and doesn't cluster naturally.
+
+**Chosen Solution:** Option A (Frequency Bias) with planned Phase B (Weighted Adjacency Preferences)
+
+#### Phase 4.5a: Initial Frequency Bias ✓ COMPLETE
+- [x] Create TileDistribution configuration class with adjustable percentages
+- [x] Default distribution: Grass 50%, Water 25%, Mountain 15%, Beach 10%
+- [x] Update Tile initialization to use biased probabilities instead of uniform (25% each)
+- [x] Update Wave algorithm to respect frequency bias during tile collapse (weighted random selection)
+- [x] Implement CreateDefault() and CreateUniform() factory methods
+- [x] Validate probability constraints (sum to 1.0)
+- [x] Update TileGrid to pass distribution to tiles
+- [x] Update Wave to preserve distribution during backtracking
+- [x] Write comprehensive tests validating distribution initialization
+- [x] Write tests validating weighted tile selection
+- [x] Verify map generation completes successfully with frequency bias
+- [x] Test deterministic behavior with same seed
+
+**Outcome:** Frequency bias infrastructure fully implemented. Maps now generate with weighted tile probabilities. The bias influences tile selection, though adjacency constraints may limit observable effect on final distribution.
+
+**Implementation Details:**
+- `TileDistribution` class: Manages tile type probabilities with validation
+- Weighted random selection in `SelectRandomType()`: Uses weighted roulette wheel selection
+- Probability weights stored in each `Tile` instance
+- `TileGrid` propagates distribution to all tiles
+- `Wave` preserves distribution during state saves/backtracking
+
+#### Phase 4.5b: Weighted Adjacency Preferences ✓ COMPLETE
+- [x] Update ITileRuleProvider interface with weight calculation method
+- [x] Implement adjacency preference weights in HardcodedRuleProvider
+- [x] Create adjacency weight matrix: same-type tiles heavily preferred, adjacent types preferred
+- [x] Update Wave tile selection to consider collapsed neighbor types
+- [x] Implement neighbor-aware weighting during ObserveAndCollapse
+- [x] Weight same-type neighbors higher (encourage clustering)
+- [x] Weight compatible neighbor types moderately higher
+- [x] Test for improved clustering (mountains together, water bodies, coastlines)
+- [x] Write tests validating clustering behavior
+- [x] Verify deterministic behavior maintained with weighted preferences
+
+**Outcome:** Weighted adjacency preferences fully implemented. Maps now show clear clustering with distinct terrain regions forming naturally. Grass clusters, water bodies, and coastal transitions all emerge from the weighting system.
+
+**Implementation Details:**
+- `GetAdjacencyWeight()` returns weight multiplier (1.0 = neutral, 3.0 = strong preference)
+- Same-type adjacencies weighted at 3.0 (mountains, grass, water) or 2.0 (beach)
+- Compatible types weighted moderately (1.2-1.5 range)
+- `Tile.CalculateNeighborAffinityWeight()` averages neighbor weights
+- Final tile selection multiplies frequency bias by adjacency preference
+
+**Result:** Maps are dramatically more realistic and visually appealing with natural terrain regions.
+
+**Alternative Approaches Not Chosen:**
+- Option B (Weighted Preferences Only): Requires complex weighting logic
+- Option C (Hybrid): Can be implemented via 4.5a + 4.5b
+- Option D (Seed-based): Requires more parameter tuning, saves for future
 
 ### Phase 5: Configurable Rule Sets (Future)
 - [ ] Develop configuration format for adjacency rules
@@ -94,7 +152,6 @@ WaveFunctionCollapse/
 - [ ] Use LINQ to optimize constraint propagation (querying affected neighbors)
 - [ ] Implement LINQ-based adjacency checking (parallel Where/All/Any)
 - [ ] Optimize wave state queries using LINQ (collapsed/uncollapsed tile queries)
-- [ ] Consider PLINQ for parallel processing of independent tiles
 - [ ] Benchmark generation time before and after optimizations
 - [ ] Target: Generate 64x64 maps in <500ms consistently
 - [ ] Write performance regression tests
@@ -119,7 +176,7 @@ WaveFunctionCollapse/
 
 ## Tile Adjacency Rules (Phase 4 & Beyond)
 
-### Hardcoded Adjacency Rules (Phase 4)
+### Hardcoded Adjacency Rules (Phase 4) ✓ COMPLETE
 Each tile type has specific constraints on which other tile types can be adjacent (in any direction):
 
 - **Grass**: Can be adjacent to [Grass, Beach, Mountain]
@@ -133,11 +190,21 @@ Each tile type has specific constraints on which other tile types can be adjacen
 - Water and Grass can only meet through Beach tiles
 - This creates realistic coastal/terrain geography in generated maps
 
+### Tile Distribution (Phase 4.5a - Current Focus)
+**Default frequencies for natural-looking maps:**
+- **Grass**: 50% - dominant terrain type
+- **Water**: 25% - significant water bodies
+- **Mountain**: 15% - scattered mountain regions
+- **Beach**: 10% - coastal transitions
+
+These percentages are adjustable via configuration to support different biome types in future phases.
+
 ### Future: Configurable Rules (Phase 5)
 Will transition to configuration-based rules (JSON/YAML) to support:
 - Custom tile types
 - Learned patterns from sample images
 - Multiple rule sets for different biomes
+- Adjustable tile distributions per biome
 
 ## Notes & Observations
 
