@@ -1,3 +1,5 @@
+# TODO: Let's adjust the Beach rules. Beaches can now only neighbor water if it is already neighboring Grass. This should help prevent random islands of just Beach in the middle of the water.
+
 # Wave Function Collapse - Implementation Plan
 
 ## Project Overview
